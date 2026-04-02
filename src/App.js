@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
 import starVideo from "./starry-sky-loop.mp4";
 
+// ✅ move outside (stable)
+const sections = ["intro", "about", "portfolio"];
+
 function App() {
 
-  const sections = ["intro", "about", "portfolio"];
   const [index, setIndex] = useState(0);
   const [animate, setAnimate] = useState(false);
   const [activeProject, setActiveProject] = useState(null);
   const [slideIndex, setSlideIndex] = useState(0);
-
 
   const projectImages = [
     ["/img/6.jpg", "/img/7.jpg","/img/8.jpg","/img/9.jpg","/img/10.jpg","/img/11.jpg","/img/12.jpg"],
     ["/img/1.jpg", "/img/2.jpg", "/img/3.jpg", "/img/4.jpg", "/img/5.jpg"],
     ["/img/13.jpg", "/img/14.jpg", "/img/15.jpg", "/img/16.jpg","/img/17.jpg","/img/18.jpg","/img/19.jpg"]
   ];
-
 
   const openProject = (i) => {
     setActiveProject(i);
@@ -27,17 +27,21 @@ function App() {
     setActiveProject(null);
   };
 
+  // ✅ SAFE next
   const nextSlide = () => {
+    if (activeProject === null) return;
     const max = projectImages[activeProject].length - 1;
     setSlideIndex((prev) => (prev === max ? 0 : prev + 1));
   };
 
+  // ✅ FIXED (moved outside useEffect)
   const prevSlide = () => {
+    if (activeProject === null) return;
     const max = projectImages[activeProject].length - 1;
     setSlideIndex((prev) => (prev === 0 ? max : prev - 1));
   };
 
-  const scrollToSection = (i) => {
+  const scrollToSection = useCallback((i) => {
 
     if (i < 0 || i > sections.length - 1) return;
 
@@ -52,80 +56,86 @@ function App() {
         setAnimate(false);
       }, 200);
     }
-  };
 
+  }, []);
+
+  // ✅ smoother scroll (throttled)
   useEffect(() => {
 
+    let isScrolling = false;
+
     const handleWheel = (e) => {
+      if (isScrolling) return;
 
-      if (e.deltaY > 0) {
-        scrollToSection(index + 1);
-      }
+      isScrolling = true;
 
-      if (e.deltaY < 0) {
-        scrollToSection(index - 1);
-      }
+      if (e.deltaY > 0) scrollToSection(index + 1);
+      if (e.deltaY < 0) scrollToSection(index - 1);
 
+      setTimeout(() => {
+        isScrolling = false;
+      }, 700);
     };
 
     window.addEventListener("wheel", handleWheel);
 
     return () => window.removeEventListener("wheel", handleWheel);
 
-  }, [index]);
+  }, [index, scrollToSection]);
 
   return (
 
-<div className="container">
+    <div className="container">
 
       {/* VIDEO BACKGROUND */}
       <video className="videoBg" autoPlay loop muted playsInline>
         <source src={starVideo} type="video/mp4" />
       </video>
 
-<nav className="sidebar">
+      <nav className="sidebar">
 
         <div
           className={index === 0 ? "navItem active" : "navItem"}
           onClick={() => scrollToSection(0)}
         >
-          // Name
+          || Name
         </div>
 
         <div
           className={index === 1 ? "navItem active" : "navItem"}
           onClick={() => scrollToSection(1)}
         >
-          // About
+          || About
         </div>
 
         <div
           className={index === 2 ? "navItem active" : "navItem"}
           onClick={() => scrollToSection(2)}
         >
-          // Projects
+          || Projects
         </div>
 
-</nav>
+      </nav>
 
       <main className={animate ? "fadeTransition" : ""}>
 
-<section id="intro" className="section introSection">
+        <section id="intro" className="section introSection">
 
           <div className="introText">
             <h1>Hi, James here!</h1>
             <p>Junior Software Engineer</p>
           </div>
-          
-          <div className="introButtonCont">
-            <button 
-            className="introButton"
-            onClick={() => scrollToSection(1)}>
-            <div className="arrowDown"></div>
-            </button>
 
+          <div className="introButtonCont">
+            <button
+              className="introButton"
+              onClick={() => scrollToSection(1)}
+            >
+              <div className="arrowDown"></div>
+            </button>
           </div>
-</section>
+
+        </section>
 
         <section id="about" className="section aboutSection">
 
@@ -156,20 +166,21 @@ function App() {
 
               <div className="glassCard">
                 <h3>Stack Specialty</h3>
-                <p>React • Vite • MonggoDB</p>
+                <p>React • Vite • MongoDB</p>
               </div>
 
             </div>
 
           </div>
 
-            <div className="aboutButtonCont">
-              <button 
+          <div className="aboutButtonCont">
+            <button
               className="aboutButton"
-              onClick={() => scrollToSection(2)}>
+              onClick={() => scrollToSection(2)}
+            >
               <div className="arrowDown"></div>
-              </button>
-            </div>
+            </button>
+          </div>
 
         </section>
 
@@ -181,30 +192,25 @@ function App() {
 
             <div className="projectCard" onClick={() => openProject(0)}>
               <h3>Blog Website</h3>
-              <p>Personal blog website with password authentication and individual user post management.</p>
-
+              <p>Personal blog website with authentication and user post management.</p>
               <div className="techPopup">
-                <p>Vue • Axios • Node.js • Express • MongoDB • JWT Authentication • REST API • CSS3 • 
-                  HTML5 • Vite • SPA Architecture</p>
+                <p>Vue • Axios • Node • Express • MongoDB • JWT • REST API • Vite</p>
               </div>
             </div>
 
             <div className="projectCard" onClick={() => openProject(1)}>
-              <h3>Product Showcase Website</h3>
-              <p>Product showcase website. Purely frontend. Focused on utilizing carousel transitions.</p>
-
+              <h3>Product Showcase</h3>
+              <p>Frontend-focused carousel and UI transitions.</p>
               <div className="techPopup">
-                <p>React • JavaScript • HTML5 • CSS • React Icons </p>
+                <p>React • JavaScript • HTML • CSS</p>
               </div>
             </div>
 
             <div className="projectCard" onClick={() => openProject(2)}>
-              <h3>Android Based Tamarind Leaf Disease Detection</h3>
-              <p>Utiliziation of TensorFlow for image processing. Ionic for crossplatform compatibility.</p>
-
+              <h3>Tamarind Leaf Detection</h3>
+              <p>TensorFlow image detection with Ionic cross-platform.</p>
               <div className="techPopup">
-                <p>Vue • Ionic Vue • TypeScript • Vite •  Capacitor (Camera API) • TensorFlow (Teachable Machine Image Model) 
-                  • SQLite (Capacitor Community SQLite) • Bootstrap • JavaScript (ES Modules)</p>
+                <p>Vue • Ionic • TensorFlow • SQLite • Capacitor</p>
               </div>
             </div>
 
@@ -238,10 +244,9 @@ function App() {
 
       </main>
 
-</div>
+    </div>
 
   );
-
 }
 
 export default App;
