@@ -426,9 +426,6 @@ to{
 opacity:1;
 transform:translateY(0);
 }
-
-/* Video background*/
-
 }
 .videoBg{
 position:fixed;
@@ -507,7 +504,7 @@ z-index:-2;
   align-items: center;
   justify-content: center;
 
-  overflow: hidden;
+  overflow: hidden infinite;
   z-index: 999;
 }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import starVideo from "./starry sky loop.mp4";
+import starVideo from "./starry-sky-loop.mp4";
 
 function App() {
 
@@ -10,14 +10,14 @@ function App() {
   const [activeProject, setActiveProject] = useState(null);
   const [slideIndex, setSlideIndex] = useState(0);
 
-  // ✅ MOVED OUT (was inside scrollToSection)
+
   const projectImages = [
     ["/img/6.jpg", "/img/7.jpg","/img/8.jpg","/img/9.jpg","/img/10.jpg","/img/11.jpg","/img/12.jpg"],
     ["/img/1.jpg", "/img/2.jpg", "/img/3.jpg", "/img/4.jpg", "/img/5.jpg"],
     ["/img/13.jpg", "/img/14.jpg", "/img/15.jpg", "/img/16.jpg","/img/17.jpg","/img/18.jpg","/img/19.jpg"]
   ];
 
-  // ✅ MOVED OUT (was inside scrollToSection)
+
   const openProject = (i) => {
     setActiveProject(i);
     setSlideIndex(0);
