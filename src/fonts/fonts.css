@@ -1,0 +1,7 @@
+@font-face {
+  font-family: "NewHeterodoxMono";
+  src: url("./NewHeterodoxMono-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
